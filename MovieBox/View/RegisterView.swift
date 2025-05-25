@@ -8,81 +8,92 @@
 import SwiftUI
 
 struct RegisterView: View {
-    @State private var name = ""
-    @State private var email = ""
-    @State private var password = ""
-    @State private var confirmPassword = ""
+    @StateObject private var viewModel = AuthViewModel()
+    @State private var showErrorAlert = false
+    @State private var showSuccessAlert = false
+    
+    @Environment(\.dismiss) private var dismiss
     
     var body: some View {
         VStack(spacing: 20) {
             Text("Create Account")
-                .font(Fonts.Title.largeSemibold)
-                .padding(.top,50)
+                .font(.largeTitle.weight(.semibold))
+                .padding(.top, 50)
+            
             Spacer()
             
-            
-            //Name
             VStack(spacing: 10) {
-                TextField("Full Name", text: $name)
-                    .padding()
-                    .textInputAutocapitalization(.never)
-                    .autocorrectionDisabled()
-                    .background(Color.background)
-                    .cornerRadius(10)
-                    .shadow(color: Color.gray.opacity(0.3), radius: 2, x: 0, y: 3)
-                
-                //email
-                TextField("Email", text: $email)
-                    .keyboardType(.emailAddress)
-                    .padding()
-                    .textInputAutocapitalization(.never)
-                    .autocorrectionDisabled()
-                    .background(Color.background)
-                    .cornerRadius(10)
-                    .shadow(color: Color.gray.opacity(0.3), radius: 2, x: 0, y: 3)
-                
-                //password
-                SecureField("Password", text: $password)
-                    .padding()
-                    .background(Color.background)
-                    .cornerRadius(10)
-                    .shadow(color: Color.gray.opacity(0.3), radius: 2, x: 0, y: 3)
-                
-                SecureField("Confirm Password", text: $confirmPassword)
-                    .padding()
-                    .background(Color.background)
-                    .cornerRadius(10)
-                    .shadow(color: Color.gray.opacity(0.3), radius: 2, x: 0, y: 3)
+                Group {
+                    TextField("Name", text: $viewModel.name)
+                    TextField("Surname", text: $viewModel.surname)
+                    TextField("Email", text: $viewModel.email)
+                        .keyboardType(.emailAddress)
+                    SecureField("Password", text: $viewModel.password)
+                    SecureField("Confirm Password", text: $viewModel.confirmPassword)
+                }
+                .padding()
+                .textInputAutocapitalization(.never)
+                .autocorrectionDisabled()
+                .background(Color(.systemBackground))
+                .cornerRadius(10)
+                .shadow(color: Color.gray.opacity(0.3), radius: 2, x: 0, y: 3)
             }
-            .font(Fonts.Content.regular)
-            .foregroundColor(Color.primaryText)
-
-            Button(action: {
-                
-            }) {
-                Text("Register")
-                    .fontWeight(.semibold)
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(Color.infoButton)
-                    .foregroundColor(.white)
-                    .cornerRadius(12)
-            }
-            .padding(.top,30)
+            .font(.body)
+            .foregroundColor(.primary)
             
-            NavigationLink("Already have an account? Login", destination: LoginView())
-                .font(Fonts.Caption.regular)
-                .foregroundColor(.main)
+            Button(action: {
+                viewModel.register()
+            }) {
+                if viewModel.isLoading {
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.blue)
+                        .cornerRadius(12)
+                } else {
+                    Text("Register")
+                        .fontWeight(.semibold)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.blue)
+                        .foregroundColor(.white)
+                        .cornerRadius(12)
+                }
+            }
+            .padding(.top, 30)
+            
+            Button("Already have an account? Login") {
+                dismiss()
+            }
+            .font(.caption)
+            .foregroundColor(.blue)
             
             Spacer()
         }
         .padding()
         .navigationTitle("Register")
         .navigationBarHidden(true)
+        
+        .alert(isPresented: $showErrorAlert) {
+            Alert(
+                title: Text("Error"),
+                message: Text(viewModel.errorMessage ?? "Something went wrong."),
+                dismissButton: .default(Text("OK"))
+            )
+        }
+        .alert("Success", isPresented: $showSuccessAlert, actions: {
+            Button("OK") {
+                dismiss()
+            }
+        }, message: {
+            Text("Registration completed successfully.")
+        })
+        .onReceive(viewModel.$errorMessage) { error in
+            showErrorAlert = error != nil
+        }
+        .onReceive(viewModel.$isRegistered) { registered in
+            if registered { showSuccessAlert = true }
+        }
     }
-}
-
-
-#Preview {
-    RegisterView()
 }

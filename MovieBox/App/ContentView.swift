@@ -6,23 +6,36 @@
 //
 
 import SwiftUI
-import SwiftData
 
 struct ContentView: View {
-    @State private var tabSelection : Tab = .home
-    
+    @State private var tabSelection: Tab = .home
+    @StateObject private var session = SessionManager.shared
+    // for endless invocation loop between pages. Login -> Register 
+    @State private var path = NavigationPath()
+
     var body: some View {
-        TabView(selection: $tabSelection){
-            HomeView()
-                .tag(Tab.home)
-            EmptyResultView(imageName: "heart", message: "There is no favorite movie")
-                .tag(Tab.favorite)
-            ProfileView()
-                .tag(Tab.profile)
-            
+        NavigationStack {
+            if session.isLoggedIn {
+                // MARK: - Main TabView if user is logged in
+                TabView(selection: $tabSelection) {
+                    HomeView()
+                        .tag(Tab.home)
+                    EmptyResultView(imageName: "heart", message: "There is no favorite movie")
+                        .tag(Tab.favorite)
+                    ProfileView()
+                        .tag(Tab.profile)
+                }
+                .overlay(alignment: .bottom) {
+                    TabBarView(selectedTab: $tabSelection)
+                }
+            } else {
+                // MARK: - Show Login or Register View if not logged in
+                LoginView()
+            }
         }
-        .overlay(alignment: .bottom){
-            TabBarView(selectedTab: $tabSelection)
+        .onAppear {
+            // MARK: - Load session when app launches
+            session.loadUserSession()
         }
     }
 }

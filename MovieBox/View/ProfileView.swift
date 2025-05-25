@@ -8,8 +8,8 @@ import SwiftUI
 
 struct ProfileView: View {
     // User data based on JSON
-    @State private var user = User(name: "John", surname: "Doe", email: "john@example.com", password: "password123")
-    
+    @StateObject private var viewModel = ProfileViewModel()
+
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
@@ -37,11 +37,11 @@ struct ProfileView: View {
                             .padding(.top, 30)
                         
                         // Name 
-                        Text("\(user.name) \(user.surname)")
+                        Text("\(viewModel.user?.name ?? "") \(viewModel.user?.surname ?? "")")
                             .font(Fonts.Title.largeSemibold)
                             .foregroundColor(Color.primary)
                         // Email
-                        Text("\(user.email)")
+                        Text("\(viewModel.user?.email)")
                             .font(Fonts.Subtitle.regular)
                             .foregroundColor(Color.primary)
                         
@@ -67,7 +67,7 @@ struct ProfileView: View {
 
                             // Logout Button
                             Button(action: {
-                                print("Logout tapped")
+                                viewModel.logout()
 
                             }) {
                                 HStack {

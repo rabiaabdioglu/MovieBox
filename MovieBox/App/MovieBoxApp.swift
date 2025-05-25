@@ -13,8 +13,7 @@ struct MovieBoxApp: App {
     
     var body: some Scene {
         WindowGroup {
-            ContentView()
-                .font(.custom("CustomFontName", size: 16))
+            SplashView()
         }
     }
 }

@@ -8,90 +8,112 @@
 import SwiftUI
 
 struct LoginView: View {
-    @State private var email = ""
-    @State private var password = ""
+    
+    @StateObject private var viewModel = AuthViewModel()
+    @State private var showRegister = false
     @State private var isSecure = true
-
+    @State private var showErrorAlert = false
+    
     var body: some View {
-        VStack(spacing: 20) {
-            
-            Text("Welcome Back")
-                .font(Fonts.Title.largeSemibold)
-                .padding(.top,50)
-            
-            Spacer()
-            
-            VStack(spacing: 10) {
-                //email
-                TextField("Email", text: $email)
-                    .autocapitalization(.none)
-                    .keyboardType(.emailAddress)
+        NavigationStack {
+            VStack(spacing: 20) {
+                Text("Welcome Back")
+                    .font(.largeTitle.weight(.semibold))
+                    .padding(.top, 50)
+                
+                Spacer()
+                
+                VStack(spacing: 10) {
+                    TextField("Email", text: $viewModel.email)
+                        .keyboardType(.emailAddress)
+                        .textInputAutocapitalization(.never)
+                        .disableAutocorrection(true)
+                        .padding()
+                        .background(Color(.systemBackground))
+                        .cornerRadius(10)
+                        .shadow(color: Color.gray.opacity(0.3), radius: 2, x: 0, y: 3)
+                    
+                    ZStack(alignment: .trailing) {
+                        if isSecure {
+                            SecureField("Password", text: $viewModel.password)
+                                .textInputAutocapitalization(.never)
+                                .disableAutocorrection(true)
+                                .padding(.horizontal, 15)
+                                .padding(.trailing, 40)
+                        } else {
+                            TextField("Password", text: $viewModel.password)
+                                .textInputAutocapitalization(.never)
+                                .disableAutocorrection(true)
+                                .padding(.horizontal, 15)
+                                .padding(.trailing, 40)
+                        }
+                        
+                        Button(action: {
+                            isSecure.toggle()
+                        }) {
+                            Image(systemName: isSecure ? "eye.slash" : "eye")
+                                .foregroundColor(.gray)
+                                .padding(.trailing, 10)
+                        }
+                    }
                     .padding()
-                    .background(Color.background)
+                    .background(Color(.systemBackground))
                     .cornerRadius(10)
                     .shadow(color: Color.gray.opacity(0.3), radius: 2, x: 0, y: 3)
-
-                // Secure password field
-                ZStack(alignment: .trailing) {
-                    if isSecure {
-                        SecureField("Password", text: $password)
-                            .autocapitalization(.none)
-                            .textInputAutocapitalization(.never)
-                            .disableAutocorrection(true)
-                            .padding(.trailing, 40)
+                }
+                .font(.body)
+                .foregroundColor(.primary)
+                
+                Button(action: {
+                    viewModel.login()
+                }) {
+                    if viewModel.isLoading {
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color.blue)
+                            .cornerRadius(12)
                     } else {
-                        TextField("Password", text: $password)
-                            .autocapitalization(.none)
-                            .textInputAutocapitalization(.never)
-                            .disableAutocorrection(true)
-                            .padding(.trailing, 40)
-                    }
-                    
-                    // Show hide pass
-                    Button(action: {
-                        isSecure.toggle()
-                    }) {
-                        Image(systemName: isSecure ? "eye.slash" : "eye")
-                            .foregroundColor(.gray)
+                        Text("Login")
+                            .fontWeight(.semibold)
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color.blue)
+                            .foregroundColor(.white)
+                            .cornerRadius(12)
                     }
                 }
-                .padding()
-                .background(Color.background)
-                .cornerRadius(10)
-                .shadow(color: Color.gray.opacity(0.3), radius: 2, x: 0, y: 3)
+                .padding(.top, 30)
 
+                Button(action: {
+                    showRegister = true
+                }) {
+                    Text("Don't have an account? Register")
+                        .font(.caption.weight(.semibold))
+                        .foregroundColor(.blue)
+                }
                 
+                Spacer()
             }
-            .font(Fonts.Content.regular)
-            .foregroundColor(Color.primaryText)
-
-            // Login Button
-            Button(action: {
-
-            }) {
-                Text("Login")
-                    .fontWeight(.semibold)
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(Color.infoButton)
-                    .foregroundColor(.white)
-                    .cornerRadius(12)
-            }
-            .padding(.top,30)
-
-            NavigationLink("Don't have an account? Register", destination: RegisterView())
-                .font(Fonts.Caption.semibold)
-                .foregroundColor(.main)
-
-            Spacer()
+            .padding()
+            .navigationTitle("Login")
+            .navigationBarHidden(true)
         }
-        .padding()
-        .navigationTitle("Login")
-        .navigationBarHidden(true)
+        .fullScreenCover(isPresented: $showRegister) {
+            RegisterView()
+        }
+        .alert(isPresented: $showErrorAlert) {
+            Alert(
+                title: Text("Login Failed"),
+                message: Text(viewModel.errorMessage ?? "An unknown error occurred."),
+                dismissButton: .default(Text("OK"))
+            )
+        }
+        .onReceive(viewModel.$errorMessage) { error in
+            if error != nil {
+                showErrorAlert = true
+            }
+        }
     }
-}
-
-
-#Preview {
-    LoginView()
 }

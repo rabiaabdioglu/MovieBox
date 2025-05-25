@@ -9,6 +9,9 @@ import Foundation
 import SwiftUI
 
 struct Fonts {
+    struct Header {
+        static let largeSemibold = Font.custom("Inter-SemiBold", size: 25)
+    }
     
     struct Title {
         static let largeSemibold = Font.custom("Inter-SemiBold", size: 22)
