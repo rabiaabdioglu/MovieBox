@@ -20,7 +20,7 @@ struct ContentView: View {
                 TabView(selection: $tabSelection) {
                     HomeView()
                         .tag(Tab.home)
-                    EmptyResultView(imageName: "heart", message: "There is no favorite movie")
+                    FavoritesView()
                         .tag(Tab.favorite)
                     ProfileView()
                         .tag(Tab.profile)

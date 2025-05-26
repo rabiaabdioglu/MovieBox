@@ -14,17 +14,23 @@ struct MovieCardView: View {
         VStack {
             ZStack(alignment: .topTrailing) {
                 // Poster
-                WebImage(url: URL(string: movie.posterURL))
-                    .resizable()
-                    .indicator(.activity)
-                    .transition(.fade(duration: 0.5))
-                    .scaledToFill()
-                    .frame(height: 250)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
-                    .background(
-                        RoundedRectangle(cornerRadius: 12)
-                            .fill(Color.gray.opacity(0.3))
-                    )
+                RoundedRectangle(cornerRadius: 12)
+                        .fill(Color.gray.opacity(0.2))
+                        .frame(height: 250)
+                        .overlay(
+                            WebImage(url: URL(string: movie.posterURL))
+                                .resizable()
+                                .indicator(.activity)
+                                .transition(.fade(duration: 0.5))
+                                .scaledToFill()
+                                .frame(height: 250)
+                                .clipped()
+                                .clipShape(RoundedRectangle(cornerRadius: 7))
+
+                        )
+                        .clipShape(RoundedRectangle(cornerRadius: 7))
+                        .frame(height: 250)
+
                 
                 // IMDb Score Badge
                 Text(String(format: "%.1f", movie.rating))
@@ -66,10 +72,4 @@ struct MovieCardView: View {
                 .fill(Color(.systemBackground))
         )
     }
-}
-
-#Preview {
-    MovieCardView(movie: MockData.allMovies[0])
-        .frame(width: 150, height: 320)
-        .padding()
 }

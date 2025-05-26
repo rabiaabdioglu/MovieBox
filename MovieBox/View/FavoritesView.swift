@@ -1,13 +1,14 @@
 //
-//  HomeView.swift
+//  FavoritesView.swift
 //  MovieBox
 //
-//  Created by Rabia Abdioğlu on 24.05.2025.
+//  Created by Rabia Abdioğlu on 26.05.2025.
 //
 
+import Foundation
 import SwiftUI
 
-struct HomeView: View {
+struct FavoritesView: View {
     @StateObject private var viewModel = MovieViewModel()
     
     let columns = [
@@ -18,33 +19,6 @@ struct HomeView: View {
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
-                HStack {
-                    Text("Movies")
-                        .font(Fonts.Title.mediumRegular)
-                        .foregroundColor(Color.primary)
-                    
-                    Spacer()
-                    
-                    Image(systemName: "magnifyingglass")
-                        .font(.system(size: 20))
-                        .foregroundColor(Color.secondaryText)
-                    
-                    Image(systemName: "slider.horizontal.3")
-                        .font(.system(size: 20))
-                        .foregroundColor(Color.secondaryText)
-                        .padding(.leading, 8)
-                    
-                    Image(systemName: "arrow.up.arrow.down")
-                        .font(.system(size: 20))
-                        .foregroundColor(Color.secondaryText)
-                        .padding(.leading, 8)
-                }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 12)
-                .background(
-                    Color(.background)
-                        .shadow(color: .secondaryBackground.opacity(0.09), radius: 2, x: 0, y: 2)
-                )
                 
                 if viewModel.isLoading {
                     ProgressView()
@@ -54,12 +28,12 @@ struct HomeView: View {
                         .foregroundColor(.red)
                         .multilineTextAlignment(.center)
                         .padding()
-                } else if viewModel.movies.isEmpty {
+                } else if viewModel.favoriteMovies.isEmpty {
                     EmptyResultView(imageName: "film", message: "No movies available")
                 } else {
                     ScrollView {
                         LazyVGrid(columns: columns, spacing: 10) {
-                            ForEach(viewModel.movies) { movie in
+                            ForEach(viewModel.favoriteMovies) { movie in
                                 NavigationLink(destination: MovieDetailView(viewModel: viewModel, movie: movie,isLiked: viewModel.likedMovieIDs.contains(movie.id))) {
                                     MovieCardView(movie: movie)
                                         .frame(height: 320)
@@ -70,11 +44,11 @@ struct HomeView: View {
                         .padding()
                     }
                 }
-
+                
             }
-          
+            
             .onAppear {
-                viewModel.fetchMovies()
+                viewModel.fetchLikedMovies()
                 viewModel.fetchLikedMovieIDs()
             }
         }
