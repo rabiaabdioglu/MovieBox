@@ -42,11 +42,15 @@ final class SessionManager: ObservableObject {
     func keepData(_ token: String, user : User) {
         
         UserDefaults.standard.set(token, forKey: Keys.authToken)
-        
-        guard let data = try? JSONEncoder().encode(user) else { return }
-        UserDefaults.standard.set(data, forKey: Keys.user)
+        saveUser(user)
         isLoggedIn = true
     }
+    // save / update user
+    func saveUser(_ user: User) {
+        guard let data = try? JSONEncoder().encode(user) else { return }
+        UserDefaults.standard.set(data, forKey: Keys.user)
+    }
+
     /// Retrieves the saved authentication token.
     func getToken() -> String? {
         UserDefaults.standard.string(forKey: Keys.authToken)

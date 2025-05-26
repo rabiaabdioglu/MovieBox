@@ -1,10 +1,3 @@
-//
-//  AuthViewModel.swift
-//  MovieBox
-//
-//  Created by Rabia Abdioğlu on 25.05.2025.
-//
-
 import Foundation
 import Combine
 
@@ -25,53 +18,42 @@ final class AuthViewModel: ObservableObject {
 
     private var cancellables = Set<AnyCancellable>()
     
-    // MARK: - Register
+    // MARK: - Register Function
     func register() {
         clearError()
-        
-        guard validateRegistration() else { return }
-        
         let user = User(id: nil, name: name, surname: surname, email: email, password: password)
+
+        // Validate user input
+        if let error = user.validate(confirmationPassword: confirmPassword) {
+            self.errorMessage = error
+            return
+        }
+
+        // Register request
         authenticate(user, for: .register) { [weak self] in
             self?.isRegistered = true
         }
     }
     
-    // MARK: - Login
+    // MARK: - Login Function
     func login() {
         clearError()
         
+        // Check required fields
         guard !email.isEmpty, !password.isEmpty else {
             errorMessage = "Email and password cannot be empty."
             return
         }
         
         let user = User(id: nil, name: nil, surname: nil, email: email, password: password)
+        
+        // Send login request
         authenticate(user, for: .login) { [weak self] in
             self?.isLoggedIn = true
         }
     }
 
-    // MARK: - Validation
-    private func validateRegistration() -> Bool {
-        guard !email.isEmpty, !name.isEmpty, !surname.isEmpty, !password.isEmpty else {
-            errorMessage = "All fields are required."
-            return false
-        }
-        guard password == confirmPassword else {
-            errorMessage = "Passwords do not match."
-            return false
-        }
-        if password.count < 6 {
-               errorMessage = "Password is too short."
-               return false
-           }
-
-        
-        return true
-    }
-    
-    // MARK: - Shared Auth Handler
+    // MARK: -  Authentication Request
     private func authenticate(_ user: User, for endpoint: AuthService.Endpoint, onSuccess: @escaping () -> Void) {
         isLoading = true
         
@@ -87,6 +69,7 @@ final class AuthViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
+    // MARK: - Clear Errors
     private func clearError() {
         errorMessage = nil
     }

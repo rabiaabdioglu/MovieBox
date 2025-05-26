@@ -51,7 +51,7 @@ final class AuthService {
         
         do {
             let jsonData = try JSONEncoder().encode(body)
-            print("Request JSON:", String(data: jsonData, encoding: .utf8) ?? "")
+//            print("Request JSON:", String(data: jsonData, encoding: .utf8) ?? "")
             request.httpBody = jsonData
             return .success(request)
         } catch {
