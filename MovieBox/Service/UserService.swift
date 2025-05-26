@@ -50,7 +50,7 @@ final class UserService {
                 return
             }
 
-            print("Status code:", httpResponse.statusCode)
+//            print("Status code:", httpResponse.statusCode)
 
 
             guard let data = data, !data.isEmpty else {
@@ -62,7 +62,6 @@ final class UserService {
                 let response = try JSONDecoder().decode(UpdateUserResponse.self, from: data)
                 completion(.success(response.user))
             } catch {
-                print("Decoding error:", error)
                 completion(.failure(error))
             }
 

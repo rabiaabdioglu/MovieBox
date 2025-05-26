@@ -21,7 +21,7 @@ final class ProfileViewModel: ObservableObject {
         fetchUser()
     }
 
-    // Load user from local session
+    // MARK: - Load user from local session
     func fetchUser() {
         if let savedUser = SessionManager.shared.getCurrentUser() {
             self.user = savedUser
@@ -30,23 +30,24 @@ final class ProfileViewModel: ObservableObject {
         }
     }
 
-    // Log the user out
+    // MARK: - Logout
+    // Clears user session
     func logout() {
         SessionManager.shared.logout()
         user = nil
         isLoggedOut = true
     }
 
-    // Update user profile with validation
+    // MARK: - Update User Profile
     func updateUser(user: User?, confirmPassword: String?, completion: @escaping (Bool) -> Void) {
-        print("Sending update with data: name=\(user!)")
+        // Check for valid user object
         guard let user = user else {
             errorMessage = "User data is missing."
             completion(false)
             return
         }
 
-        // Validate user input
+        // MARK: - Input Validation
         if let validationError = user.validate(confirmationPassword: confirmPassword) {
             errorMessage = validationError
             completion(false)
@@ -56,7 +57,8 @@ final class ProfileViewModel: ObservableObject {
         isLoading = true
         errorMessage = nil
 
-        // Send request to update profile
+        // MARK: - Update Request
+        // Sends update request and handles response
         userService.updateUser(user) { [weak self] result in
             DispatchQueue.main.async {
                 self?.isLoading = false

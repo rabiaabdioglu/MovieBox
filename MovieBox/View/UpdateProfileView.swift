@@ -12,15 +12,19 @@ struct UpdateProfileView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var viewModel: ProfileViewModel
 
+    // MARK: - Form Fields
     @State private var name: String = ""
     @State private var surname: String = ""
     @State private var email: String = ""
     @State private var password: String = ""
     @State private var confirmPassword: String = ""
+    
+    @State private var showSuccessAlert = false
 
     var body: some View {
         VStack(spacing: 20) {
 
+            // MARK: - Header
             HStack {
                 Text("Update Profile")
                     .font(Fonts.Subtitle.mediumSemibold)
@@ -35,7 +39,8 @@ struct UpdateProfileView: View {
             .padding(.top, 20)
 
             Spacer()
-            // Input fields
+
+            // MARK: - Input Fields
             VStack(spacing: 10) {
                 Group {
                     TextField("Name", text: $name)
@@ -43,7 +48,10 @@ struct UpdateProfileView: View {
                     TextField("Email", text: $email)
                         .keyboardType(.emailAddress)
                     SecureField("Password", text: $password)
+                        .textContentType(.newPassword)
                     SecureField("Confirm Password", text: $confirmPassword)
+                        .textContentType(.newPassword)
+
                 }
                 .padding()
                 .textInputAutocapitalization(.never)
@@ -55,7 +63,7 @@ struct UpdateProfileView: View {
             .font(Fonts.Subtitle.regular)
             .foregroundColor(Color.primary)
 
-            // Show error message if any
+            // MARK: - Error Message
             if let error = viewModel.errorMessage {
                 Text(error)
                     .foregroundColor(.red)
@@ -63,7 +71,7 @@ struct UpdateProfileView: View {
                     .padding(.horizontal)
             }
 
-            // MARK: - Update
+            // MARK: - Update Button
             Button(action: {
                 let updatedUser = User(
                     id: viewModel.user?.id,
@@ -75,7 +83,7 @@ struct UpdateProfileView: View {
 
                 viewModel.updateUser(user: updatedUser, confirmPassword: confirmPassword) { success in
                     if success {
-                        dismiss()
+                        showSuccessAlert = true
                     }
                 }
             }) {
@@ -89,18 +97,25 @@ struct UpdateProfileView: View {
                     .cornerRadius(10)
                     .disabled(viewModel.isLoading)
             }
-            .padding(.horizontal)	
+            .padding(.horizontal)
 
             Spacer()
         }
         .padding(20)
         .background(Color.background)
         .onAppear {
-            // fill fields with current user data
+            
+            // MARK: - Pre-fill fields with current user info
             if let user = viewModel.user {
                 name = user.name ?? ""
                 surname = user.surname ?? ""
                 email = user.email ?? ""
+            }
+        }
+        // MARK: - Success Alert
+        .alert("Profile updated successfully!", isPresented: $showSuccessAlert) {
+            Button("OK") {
+                dismiss()
             }
         }
     }

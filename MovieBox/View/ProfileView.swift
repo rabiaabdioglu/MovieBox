@@ -47,7 +47,9 @@ struct ProfileView: View {
                         .foregroundColor(Color.primary)
                     
                     Spacer()
-                    
+              
+                    // MARK: - Update Logout Buttons
+
                     // Update User Button
                     Button(action: {
                         showUpdateProfile = true
@@ -94,6 +96,7 @@ struct ProfileView: View {
                 
             }
             .navigationBarTitleDisplayMode(.inline)
+            // MARK: - Update page
             .sheet(isPresented: $showUpdateProfile) {
                 UpdateProfileView()
                     .presentationDetents([.large	])

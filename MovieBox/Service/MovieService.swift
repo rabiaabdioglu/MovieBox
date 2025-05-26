@@ -72,7 +72,7 @@ final class MovieService {
             }
             do {
                 let response = try JSONDecoder().decode(LikeUnlikeResponse.self, from: data)
-                print("like",response)
+       //         print("like",response)
                 completion(.success(response))
             } catch {
                 completion(.failure(error))
@@ -99,7 +99,6 @@ final class MovieService {
             }
             do {
                 let response = try JSONDecoder().decode(LikeUnlikeResponse.self, from: data)
-                print("unlike",response)
                 completion(.success(response))
             } catch {
                 completion(.failure(error))

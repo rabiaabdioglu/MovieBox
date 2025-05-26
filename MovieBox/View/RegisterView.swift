@@ -16,12 +16,15 @@ struct RegisterView: View {
     
     var body: some View {
         VStack(spacing: 20) {
+            
+            // MARK: - Title
             Text("Create Account")
                 .font(.largeTitle.weight(.semibold))
                 .padding(.top, 50)
             
             Spacer()
             
+            // MARK: - Input Fields
             VStack(spacing: 10) {
                 Group {
                     TextField("Name", text: $viewModel.name)
@@ -29,7 +32,9 @@ struct RegisterView: View {
                     TextField("Email", text: $viewModel.email)
                         .keyboardType(.emailAddress)
                     SecureField("Password", text: $viewModel.password)
+                        .textContentType(.newPassword)
                     SecureField("Confirm Password", text: $viewModel.confirmPassword)
+                        .textContentType(.newPassword)
                 }
                 .padding()
                 .textInputAutocapitalization(.never)
@@ -41,10 +46,12 @@ struct RegisterView: View {
             .font(.body)
             .foregroundColor(.primary)
             
+            // MARK: - Register Button
             Button(action: {
                 viewModel.register()
             }) {
                 if viewModel.isLoading {
+                    // Show loading spinner during registration
                     ProgressView()
                         .progressViewStyle(CircularProgressViewStyle(tint: .white))
                         .frame(maxWidth: .infinity)
@@ -52,6 +59,7 @@ struct RegisterView: View {
                         .background(Color.blue)
                         .cornerRadius(12)
                 } else {
+                    // Show Register button
                     Text("Register")
                         .fontWeight(.semibold)
                         .frame(maxWidth: .infinity)
@@ -63,6 +71,7 @@ struct RegisterView: View {
             }
             .padding(.top, 30)
             
+            // MARK: - Navigate to Login
             Button("Already have an account? Login") {
                 dismiss()
             }
@@ -75,6 +84,7 @@ struct RegisterView: View {
         .navigationTitle("Register")
         .navigationBarHidden(true)
         
+        // MARK: - Error Alert
         .alert(isPresented: $showErrorAlert) {
             Alert(
                 title: Text("Error"),
@@ -82,6 +92,8 @@ struct RegisterView: View {
                 dismissButton: .default(Text("OK"))
             )
         }
+        
+        // MARK: - Success Alert
         .alert("Success", isPresented: $showSuccessAlert, actions: {
             Button("OK") {
                 dismiss()
@@ -89,6 +101,8 @@ struct RegisterView: View {
         }, message: {
             Text("Registration completed successfully.")
         })
+        
+        // MARK: - Handle Error and Success Updates
         .onReceive(viewModel.$errorMessage) { error in
             showErrorAlert = error != nil
         }

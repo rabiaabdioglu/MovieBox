@@ -21,7 +21,6 @@ struct SplashView: View {
             } else {
                 Color.main
                     .ignoresSafeArea()
-                // MARK: - Splash screen logo and title
                 VStack {
                     Image("Splash")
                         .resizable()

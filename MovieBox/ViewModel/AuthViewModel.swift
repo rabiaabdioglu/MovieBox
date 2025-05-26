@@ -29,7 +29,7 @@ final class AuthViewModel: ObservableObject {
             return
         }
 
-        // Register request
+        // Send register request
         authenticate(user, for: .register) { [weak self] in
             self?.isRegistered = true
         }
@@ -38,22 +38,19 @@ final class AuthViewModel: ObservableObject {
     // MARK: - Login Function
     func login() {
         clearError()
-        
-        // Check required fields
+
         guard !email.isEmpty, !password.isEmpty else {
             errorMessage = "Email and password cannot be empty."
             return
         }
-        
         let user = User(id: nil, name: nil, surname: nil, email: email, password: password)
-        
-        // Send login request
-        authenticate(user, for: .login) { [weak self] in
+                authenticate(user, for: .login) { [weak self] in
             self?.isLoggedIn = true
         }
     }
 
-    // MARK: -  Authentication Request
+    // MARK: - Authentication Request
+    // Handles both login and registration requests
     private func authenticate(_ user: User, for endpoint: AuthService.Endpoint, onSuccess: @escaping () -> Void) {
         isLoading = true
         

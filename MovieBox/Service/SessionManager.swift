@@ -24,12 +24,12 @@ final class SessionManager: ObservableObject {
     
     // MARK: - Session Lifecycle
     
-    /// Update login status.
+    // Update login status.
     func loadUserSession() {
         isLoggedIn = getToken() != nil
     }
     
-    /// Clear User defaultss
+    // Clear User defaultss
     func logout() {
         UserDefaults.standard.removeObject(forKey: Keys.authToken)
         UserDefaults.standard.removeObject(forKey: Keys.user)
@@ -38,7 +38,7 @@ final class SessionManager: ObservableObject {
     
     // MARK: - Data Management
     
-    /// Save  authentication token
+    // Save  authentication token
     func keepData(_ token: String, user : User) {
         
         UserDefaults.standard.set(token, forKey: Keys.authToken)
@@ -51,12 +51,12 @@ final class SessionManager: ObservableObject {
         UserDefaults.standard.set(data, forKey: Keys.user)
     }
 
-    /// Retrieves the saved authentication token.
+    // Retrieves the saved authentication token.
     func getToken() -> String? {
         UserDefaults.standard.string(forKey: Keys.authToken)
     }
 
-    /// Retrieves the current user from stored data.
+    // Retrieves the current user from stored data.
     func getCurrentUser() -> User? {
         guard let data = UserDefaults.standard.data(forKey: Keys.user),
               let user = try? JSONDecoder().decode(User.self, from: data) else {

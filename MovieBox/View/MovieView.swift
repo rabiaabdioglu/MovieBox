@@ -22,6 +22,8 @@ struct MovieDetailView: View {
         GeometryReader { geometry in
             ScrollView {
                 VStack(spacing: 0) {
+                    // MARK: - Movie poster with slide effect
+
                     GeometryReader { geo in
                         let offset = geo.frame(in: .global).minY
                         
@@ -35,6 +37,8 @@ struct MovieDetailView: View {
                     }
                     .frame(height: geometry.size.height * 0.9)
                     
+                    // MARK: - Movie details
+
                     VStack(alignment: .leading, spacing: 20) {
                         HStack {
                             Text(movie.title)
